@@ -1,5 +1,5 @@
 <html>
-<title>Buzzer!</title>
+<title>Buzzer (Teacher)!</title>
 
 <body>
 <canvas id="myCanvas" width="400" height="400" style="border:2px solid #000000;"></canvas>
@@ -8,9 +8,7 @@
 <h2 id="ycor"></h2>
 
 <form id="idForm" action="javascript:connect();">
-ID: <input type="text" name="sessionId" id="sessionID">
-</br>
-Name:<input type="text" name="user" id ="user">
+ID: <input type="text" name="sessionId" id="sessionID"></br>
 <input type="submit" value="Go">
 </form>
 
@@ -25,9 +23,8 @@ Name:<input type="text" name="user" id ="user">
   var sessionId;
 
 function connect(){
-  var user = $("#user").val();
   sessionId=$("#sessionID").val();
-  socket.emit('subscribe',sessionId,user);
+  socket.emit('subscribe',sessionId,pass);
   socket.emit('draw', x,y);
 }    
 
