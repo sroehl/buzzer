@@ -3,9 +3,10 @@
 
 <body>
 <canvas id="myCanvas" width="400" height="400" style="border:2px solid #000000;"></canvas>
-<h1 id="btn">Click Here!</h1>
+<h1 id="buzzBtn">Buzz!</h1>
 </br>
-<h2 id="ycor"></h2>
+<h1 id="clrBtn">Clear!</h1>
+</br>
 
 <form id="idForm" action="javascript:connect();">
 ID: <input type="text" name="sessionId" id="sessionID"></br>
@@ -41,9 +42,19 @@ function connect(){
     ctx.font="30px Arial";
     ctx.fillText(user,150,150);
   });
+
+  socket.on('clearCanvas',function(){
+    var c=document.getElementById("myCanvas");
+    var ctx=c.getContext("2d");
+     ctx.clearRect(0, 0,400,400);
+  });
     
-$("#btn").click(function(){
+$("#buzzBtn").click(function(){
     socket.emit('buzz');
+});
+
+$("#clrBtn").click(function(){
+    socket.emit('clear');
 });
 
 $("#new").click(function(){

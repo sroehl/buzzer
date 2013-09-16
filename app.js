@@ -4,6 +4,8 @@ var app = require('http').createServer(handler)
 
 var url = require('url');
 
+var rooms = new Array();
+
 app.listen(8999);
 
 function handler (req, res) {
@@ -26,22 +28,6 @@ function handler (req, res) {
   }
 }
 
-function getUsers2(room){
-for (var socketId in io.sockets.clients(room)) {
-    io.sockets.sockets[socketId].get('nickname', function(err, nickname) {
-        console.log(nickname);
-    });
-}
-}
-
-function getUsers(room){
-var clients = io.sockets.clients(room);
-console.log(clients[0]);
-for (var client  in clients) {
-   console.log(client);
-
-}
-}
 
 io.sockets.on('connection', function (socket) {
   var room;
@@ -56,12 +42,25 @@ io.sockets.on('connection', function (socket) {
   });
 
 socket.on('subscribe', function(roomId,user) { 
-       socket.leave(room);
+      socket.leave(room);
        socket.join(roomId); 
        room=roomId;
        socket.set('nickname',user);
-      console.log('joined');
+       console.log('joined');
+
+      if(typeof rooms[room] === 'undefined'){
+        rooms[room] = new Array();
+        rooms[room].push(user);
+      }else{
+        rooms[room].push(user);
+      }
  });
+
+
+  socket.on('clear', function()  {
+    io.sockets.in(room).emit('clearCanvas');
+  });
+
 
 });
 
