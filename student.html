@@ -1,21 +1,30 @@
 <html>
 <title>Buzzer!</title>
 
-<body>
-<canvas id="myCanvas" width="400" height="400" style="border:2px solid #000000;"></canvas>
-<h1 id="buzzBtn">Buzz!</h1>
-</br>
+<body >
+<div id="main">
+<canvas id="myCanvas" width="400" height="400" style="border:0px solid #000000;"></canvas>
 <h1 id="clrBtn">Clear!</h1>
 </br>
 
+<div id="new">New Server</div>
+
+</div>
+<div id="login" style="
+		  border-style:solid;
+		  border-width:5px;
+		  width:200px;
+		  position:relative;
+		  text-align:center">
+<h1>Login:</h1>
 <form id="idForm" action="javascript:connect();">
 ID: <input type="text" name="sessionId" id="sessionID"></br>
 Name:<input type="text" name="user" id="user">
 <input type="submit" value="Go">
 </form>
-<div id="new">New Server</div>
-
+</div>
 </body>
+
 </html>
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -25,41 +34,73 @@ Name:<input type="text" name="user" id="user">
   var socket= io.connect(); 
   var sessionId;
 
+function greenCircle(){
+    var c=document.getElementById("myCanvas");
+    var ctx=c.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(c.width/2,c.height/2,190,0,2*Math.PI,false);
+    ctx.fillStyle='green';
+    ctx.fill();
+    ctx.lineWidth=5;
+    ctx.strokeStyle='#003300';
+    ctx.stroke();
+    ctx.fillStyle="#000000";
+    ctx.font="30px Arial";
+    ctx.textAlign="center";
+    ctx.fillText('Buzz!',200,200);
+}
+
 function connect(){
   var user = $("#user").val();
   sessionId=$("#sessionID").val();
   socket.emit('subscribe',sessionId,user);
-  $("#idForm").hide();
-  $("#new").show();
+  $("#login").hide(400);
+  $("#main").show(400);
 }    
 
   socket.on('buzzed', function(user){
     var c=document.getElementById("myCanvas");
     var ctx=c.getContext("2d");
-    ctx.fillStyle="#FF0000";
-    ctx.fillRect(0,0,400,400);
+    var c=document.getElementById("myCanvas");
+    var ctx=c.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(c.width/2,c.height/2,190,0,2*Math.PI,false);
+    ctx.fillStyle='red';
+    ctx.fill();
+    ctx.lineWidth=5;
+    ctx.strokeStyle='#003300';
+    ctx.stroke();
+
     ctx.fillStyle="#000000";
     ctx.font="30px Arial";
-    ctx.fillText(user,150,150);
+    ctx.textAlign="center";
+    ctx.fillText(user,200,200);
   });
 
   socket.on('clearCanvas',function(){
-    var c=document.getElementById("myCanvas");
-    var ctx=c.getContext("2d");
-     ctx.clearRect(0, 0,400,400);
+    greenCircle();
   });
     
-$("#buzzBtn").click(function(){
-    socket.emit('buzz');
-});
-
 $("#clrBtn").click(function(){
     socket.emit('clear');
 });
 
 $("#new").click(function(){
-  $("#idForm").show();
-  $("#new").hide();
+  $("#login").show(400);
+  $("#main").hide(400);
 });
+
+    
+$("#myCanvas").click(function(){
+    socket.emit('buzz');
+});
+
+
+$(document).ready(function(){
+    greenCircle();
+    $("#clrBtn").hide();
+    $("#main").hide();
+});
+ 
  
 </script>

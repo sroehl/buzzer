@@ -1,17 +1,29 @@
 <html>
-<title>Buzzer (Teacher)!</title>
+<title>Buzzer!</title>
 
 <body>
-<canvas id="myCanvas" width="400" height="400" style="border:2px solid #000000;"></canvas>
-<h1 id="btn">Click Here!</h1>
+<div id="main">
+<canvas id="myCanvas" width="400" height="400" style="border:0px solid #000000;"></canvas>
+<h1 id="clrBtn" style="padding-left:150px;">Clear!</h1>
 </br>
-<h2 id="ycor"></h2>
+<div id="users"></div>
+<div id="new">New Server</div>
+</div>
+
+<div id="login" style="
+		  border-style:solid;
+		  border-width:5px;
+		  width:200px;
+		  position:relative;
+		  text-align:center">
+<h1>Login:</h1>
 
 <form id="idForm" action="javascript:connect();">
 ID: <input type="text" name="sessionId" id="sessionID"></br>
+Name:<input type="text" name="user" id="user">
 <input type="submit" value="Go">
 </form>
-
+</div>
 </body>
 </html>
 <script src="/socket.io/socket.io.js"></script>
@@ -22,25 +34,81 @@ ID: <input type="text" name="sessionId" id="sessionID"></br>
   var socket= io.connect(); 
   var sessionId;
 
-function connect(){
-  sessionId=$("#sessionID").val();
-  socket.emit('subscribe',sessionId,pass);
-  socket.emit('draw', x,y);
-}    
-
-  socket.on('sdraw', function(xcor,ycor){
+function greenCircle(){
     var c=document.getElementById("myCanvas");
     var ctx=c.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(c.width/2,c.height/2,190,0,2*Math.PI,false);
+    ctx.fillStyle='green';
+    ctx.fill();
+    ctx.lineWidth=5;
+    ctx.strokeStyle='#003300';
+    ctx.stroke();
+    ctx.fillStyle="#000000";
     ctx.font="30px Arial";
-    ctx.fillText("Hello World",xcor,ycor);
-    y=ycor;
-    x=xcor;
-    $("#ycor").html(ycor);
+    ctx.textAlign="center";
+    ctx.fillText('Buzz!',200,200);
+}
+
+function connect(){
+  var user = $("#user").val();
+  sessionId=$("#sessionID").val();
+  socket.emit('subscribe',sessionId,user);
+  $("#login").hide(400);
+  $("#main").show(400);
+}    
+
+  socket.on('buzzed', function(user){
+    var c=document.getElementById("myCanvas");
+    var ctx=c.getContext("2d");
+    var c=document.getElementById("myCanvas");
+    var ctx=c.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(c.width/2,c.height/2,190,0,2*Math.PI,false);
+    ctx.fillStyle='red';
+    ctx.fill();
+    ctx.lineWidth=5;
+    ctx.strokeStyle='#003300';
+    ctx.stroke();
+
+    ctx.fillStyle="#000000";
+    ctx.font="30px Arial";
+    ctx.textAlign="center";
+    ctx.fillText(user,200,200);
+  });
+
+  socket.on('clearCanvas',function(){
+    greenCircle();
+  });
+
+  socket.on('users',function(users){
+    var i;
+    var userHtml="Connected List:</br>";
+    for(i=0;i<users.length;i++){
+      userHtml+=users[i]+"</br>";
+    }
+      $("#users").html(userHtml);
   });
     
-$("#btn").click(function(){
-    y=y+50
-    socket.emit('draw', x,y);
+$("#clrBtn").click(function(){
+    socket.emit('clear');
 });
+
+$("#new").click(function(){
+  $("#login").show(400);
+  $("#main").hide(400);
+});
+
+    
+$("#myCanvas").click(function(){
+    socket.emit('buzz');
+});
+
+
+$(document).ready(function(){
+    greenCircle();
+    $("#main").hide();
+});
+ 
  
 </script>
